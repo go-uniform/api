@@ -14,7 +14,13 @@ func init() {
 	var limit int
 	var test bool
 	var virtual bool
-	// todo: add custom flag variables here
+
+	var port string
+	var httpsCert string
+	var httpsKey string
+	var disableHttps bool
+	var origin string
+	var jwtPub string
 
 	var runCmd = &cobra.Command{
 		Use:   "run",
@@ -31,7 +37,13 @@ func init() {
 				"limit":      limit,
 				"test":       test,
 				"virtual":    virtual,
-				// todo: link custom flags to arg values here, example: "custom": custom,
+
+				"port":         port,
+				"httpsCert":    httpsCert,
+				"httpsKey":     httpsKey,
+				"disableHttps": disableHttps,
+				"origin":       origin,
+				"jwtPub":       jwtPub,
 			})
 		},
 	}
@@ -42,9 +54,13 @@ func init() {
 	runCmd.Flags().IntVarP(&limit, "limit", "x", 1000, "The messages per second that each topic worker will be limited to [set to 0 or less for maximum throughput]")
 	runCmd.Flags().BoolVar(&test, "test", false, "A flag indicating if service should enter into test mode")
 	runCmd.Flags().BoolVar(&virtual, "virtual", false, "A flag indicating if service should virtualize external integration calls")
-	// todo: add custom CLI flags here
 
-	// todo: add custom CLI flag validations here
+	runCmd.Flags().StringVarP(&port, "port", "p", "8000", "The webserver port to host on")
+	runCmd.Flags().StringVarP(&httpsCert, "httpsCert", "", "/etc/ssl/certs/uniform-https.crt", "The webserver HTTPS certificate file path")
+	runCmd.Flags().StringVarP(&httpsKey, "httpsKey", "", "/etc/ssl/private/uniform-https.key", "The webserver HTTPS key file path")
+	runCmd.Flags().BoolVar(&disableHttps, "disableHttps", false, "A flag indicating if service should disable HTTPS encryption")
+	runCmd.Flags().StringVarP(&origin, "origin", "o", "*", "The allow origin list for CORS")
+	runCmd.Flags().StringVarP(&jwtPub, "jwtPub", "", "/etc/ssl/certs/uniform-jwt.pub", "The public rsa key used to verify JWTs")
 
 	_base.RootCmd.AddCommand(runCmd)
 }
