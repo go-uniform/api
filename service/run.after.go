@@ -36,6 +36,8 @@ func RunAfter(shutdown chan bool, group *sync.WaitGroup, p diary.IPage) {
 		panic(err)
 	}
 
+	info.Engine.Use(_base.CorsMiddleware(origin))
+
 	// serve api html documentation on the root path
 	p.Info("http.bind.main", diary.M{
 		"path": "/",
@@ -72,8 +74,6 @@ func RunAfter(shutdown chan bool, group *sync.WaitGroup, p diary.IPage) {
 
 	srv := http.Server{
 		Addr: ":" + port,
-		// the always annoying CORS middleware, for added security of course ;)
-		Handler: &_base.CorsMiddleware{Engine: info.Engine, Origin: origin},
 	}
 	p.Info("http.server", diary.M{
 		"addr": ":" + port,

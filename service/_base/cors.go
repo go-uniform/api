@@ -2,23 +2,21 @@ package _base
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strings"
 )
 
-type CorsMiddleware struct {
-	*gin.Engine
-	Origin string
-}
+func CorsMiddleware(origin string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", origin)
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		c.Header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization, Page-Size, Page-Index")
+		c.Header("Access-Control-Expose-Headers", "Message, Page-Size, Page-Index, Page-Count, Record-Page-Count, Record-Total-Count")
 
-func (fn CorsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", fn.Origin)
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization, Page-Size, Page-Index")
-	w.Header().Set("Access-Control-Expose-Headers", "Message, Page-Size, Page-Index, Page-Count, Record-Page-Count, Record-Total-Count")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
 
-	if strings.ToUpper(r.Method) == "OPTIONS" {
-		return
+		c.Next()
 	}
-	fn.Engine.ServeHTTP(w, r)
 }
